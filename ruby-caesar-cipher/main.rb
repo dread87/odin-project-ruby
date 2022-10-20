@@ -1,23 +1,19 @@
 def caesar_cipher(string, shift_factor)
-  new_string = ""
+  new_string = ''
   string.each_char do |char|
     ascii_char = char.ord
 
-    if ascii_char >= 65 and ascii_char <= 90
+    if ascii_char >= 65 && ascii_char <= 90
       ascii_char += shift_factor
-      if ascii_char > 90
-        ascii_char -= 26
-      end
-    elsif ascii_char >= 97 and ascii_char <= 122
+      ascii_char -= 26 if ascii_char > 90
+    elsif ascii_char >= 97 && ascii_char <= 122
       ascii_char += shift_factor
-      if ascii_char > 122
-        ascii_char -= 26
-      end
+      ascii_char -= 26 if ascii_char > 122
     end
-  
-  new_string << ascii_char.chr
+
+    new_string << ascii_char.chr
   end
   puts new_string
 end
 
-caesar_cipher("What a string!",25)
+caesar_cipher('What a string!', 25)
