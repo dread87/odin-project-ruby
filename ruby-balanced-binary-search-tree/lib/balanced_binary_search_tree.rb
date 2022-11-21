@@ -13,7 +13,7 @@ class Node
   end
 end
 
-class Tree
+class BBST
   attr_accessor :root
 
   def initialize(array)
@@ -27,7 +27,7 @@ class Tree
     mid = array.length / 2
     root = Node.new(array[mid])
     root.left = build_tree(array[..mid - 1])
-    root.right = build_tree(array[mid..])
+    root.right = build_tree(array[mid + 1..])
 
     root
   end
@@ -85,5 +85,76 @@ class Tree
     return root if root.nil? || root.data == data
 
     root.data < data ? find(data, root.right) : find(data, root.left)
+  end
+
+  def level_order(root = @root)
+    return nil if root.nil?
+
+    queue = []
+    result = []
+    queue.push(root)
+    until queue.empty?
+      node = queue.shift
+      result.push(block_given? ? yield(node) : node)
+      queue.push(node.left) if node.left
+      queue.push(node.right) if node.right
+    end
+    result
+  end
+
+  def inorder(root = @root, output = [], &)
+    return unless root
+
+    inorder(root.left, output, &)
+    block_given? ? yield(root) : output.push(root)
+    inorder(root.right, output, &)
+
+    output
+  end
+
+  def preorder(root = @root, output = [], &)
+    return unless root
+
+    block_given? ? yield(root) : output.push(root)
+    preorder(root.left, output, &)
+    preorder(root.right, output, &)
+
+    output
+  end
+
+  def postorder(root = @root, output = [], &)
+    return unless root
+
+    postorder(root.left, output, &)
+    postorder(root.right, output, &)
+    block_given? ? yield(root) : output.push(root)
+
+    output
+  end
+
+  def depth(node)
+    count = 0
+    current_node = @root
+    until current_node == node
+      count += 1
+      current_node = current_node.data > node.data ? current_node.left : current_node.right
+    end
+    count
+  end
+
+  def height(node = @root, count = -1)
+    return count if node.nil?
+
+    count += 1
+    [height(node.left, count), height(node.right, count)].max
+  end
+
+  def balanced?
+    (height(@root.left) - height(@root.right)).abs.between?(-1, 1)
+  end
+
+  def rebalance!
+    tree = inorder.uniq.sort.map(&:data)
+    @root = build_tree(tree)
   end
 end
